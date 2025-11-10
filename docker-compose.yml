@@ -1,0 +1,22 @@
+version: "3.8"
+services:
+  supertokens-db:
+    image: postgres:15
+    container_name: supertokens-db
+    environment:
+      POSTGRES_USER: postgresqlUser
+      POSTGRES_PASSWORD: password
+      POSTGRES_DB: supertokens
+    ports:
+      - "5432:5432"
+
+  supertokens:
+    image: registry.supertokens.io/supertokens/supertokens-postgresql
+    container_name: supertokens
+    depends_on:
+      - supertokens-db
+    ports:
+      - "3567:3567"
+    environment:
+      DB_TYPE: postgresql
+      DB_CONNECTION_URI: postgresql://postgresqlUser:password@supertokens-db:5432/supertokens
