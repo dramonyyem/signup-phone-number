@@ -1,12 +1,13 @@
 const User = require("../models/User");
 
-const postUser = async (req, res) => {
+const postAuth = async(req, res) => {
   try {
-    const { phone, password } = await req.body;
+    const { phone, password } = req.body;
 
     const user = new User({
       phone,
       password,
+      old_password:password
     });
 
     await user.save();
@@ -18,5 +19,5 @@ const postUser = async (req, res) => {
 };
 
 module.exports = {
-  postUser,
+  postAuth,
 };

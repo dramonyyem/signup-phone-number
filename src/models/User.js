@@ -3,6 +3,7 @@ const mongoose = require("mongoose");
 const userSchema = new mongoose.Schema({
   phone: { type: String, required: true, unique: true },
   password: { type: String, required: true },
+  old_password: { type: String, required: true },
 });
 
 const User = mongoose.model("User", userSchema);

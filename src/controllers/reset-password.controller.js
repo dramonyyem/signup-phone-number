@@ -10,10 +10,9 @@ const getPhoneNumber = async (req, res) => {
     throw new Error("please check password again");
   }
 };
-const postResetPassword = async (req, res) => {
+const postNewPassword = async (req, res) => {
   try {
     const { phone, password, verify_password } = await req.body;
-
     if (!(password === verify_password)) {
       throw new Error("please check password again");
     }
@@ -21,8 +20,17 @@ const postResetPassword = async (req, res) => {
     const user = await User.findOne({
       phone: phone,
     });
+
+    if (!user) {
+      throw new Error("no phone number inside backend");
+    }
+    user.old_password = user.password;
+    user.password = password;
+    await user.save();
+
+    return res.json("new passsword asign");
   } catch (error) {
-    throw new Error("please check password again");
+    throw new Error("Server Error");
   }
 };
 
@@ -30,6 +38,7 @@ const postOtpSend = async (req, res) => {
   // mockup otp
   try {
     const { phone } = await req.body;
+
     const request = {
       code: "123456",
     };
@@ -45,10 +54,9 @@ const postOtpSend = async (req, res) => {
     });
 
     await resetPassword.save();
-
     return res.json(sessionId);
   } catch (error) {
-    throw new Error("please check password again");
+    throw new Error("Server error");
   }
 };
 
@@ -61,18 +69,21 @@ const postVerifyOtp = async (req, res) => {
       sessionId: sessionId,
       code: code,
     });
-
     if (!checkIfVerified) {
       throw new Error("Wrong OTP");
     }
 
-    return res.json("allow access");
+    checkIfVerified.verified_status = true;
+    await checkIfVerified.save();
+
+    return res.json(true);
   } catch (error) {
-    throw new Error("Wrong OTP");
+    throw new Error("Server Error");
   }
 };
+
 module.exports = {
-  postResetPassword,
+  postNewPassword,
   postOtpSend,
   getPhoneNumber,
   postVerifyOtp,
